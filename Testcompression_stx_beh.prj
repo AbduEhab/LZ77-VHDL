@@ -1,0 +1,2 @@
+vhdl isim_temp "../Desktop/Compression_Chip.vhd"
+vhdl isim_temp "Testcompression.vhd"

@@ -1,0 +1,4 @@
+vhdl isim_temp "Decompressionloop.vhd"
+vhdl isim_temp "../Desktop/Compression_Chip.vhd"
+vhdl isim_temp "Satallite.vhd"
+vhdl isim_temp "TESTBENCHPROJECT.vhd"

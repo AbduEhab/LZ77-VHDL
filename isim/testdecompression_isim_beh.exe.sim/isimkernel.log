@@ -1,0 +1,28 @@
+Command line:
+   testdecompression_isim_beh.exe
+     -simmode  gui
+     -simrunnum  0
+     -socket  51534
+
+Thu Jan 14 23:37:12 2021
+
+
+ Elaboration Time: 0.296875 sec
+
+ Current Memory Usage: 5654.84 Meg
+
+ Total Signals          : 6
+ Total Nets             : 1025
+ Total Signal Drivers   : 3
+ Total Blocks           : 4
+ Total Primitive Blocks : 3
+ Total Processes        : 2
+ Total Traceable Variables  : 13
+ Total Scalar Nets and Variables : 1508
+
+ Total Simulation Time: 0.34375 sec
+
+ Current Memory Usage: 5025.69 Meg
+
+Thu Jan 14 23:40:57 2021
+

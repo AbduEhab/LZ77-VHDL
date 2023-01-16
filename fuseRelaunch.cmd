@@ -1,0 +1,1 @@
+-intstyle "ise" -incremental -lib "secureip" -o "C:/Users/Mohamed/FinalProject/testdecompression_isim_beh.exe" -prj "C:/Users/Mohamed/FinalProject/testdecompression_beh.prj" "work.testdecompression" 

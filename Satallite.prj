@@ -1,0 +1,3 @@
+vhdl work "Decompressionloop.vhd"
+vhdl work "../Desktop/Compression_Chip.vhd"
+vhdl work "Satallite.vhd"

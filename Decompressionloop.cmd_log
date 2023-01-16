@@ -1,0 +1,3 @@
+xst -intstyle ise -ifn "C:/Users/Mohamed/FinalProject/Decompressionloop.xst" -ofn "C:/Users/Mohamed/FinalProject/Decompressionloop.syr" 
+ngdbuild -intstyle ise -dd _ngo -nt timestamp -i -p xc7a100t-csg324-3 Decompressionloop.ngc Decompressionloop.ngd  
+xst -intstyle ise -ifn "C:/Users/Mohamed/FinalProject/DecompressionLoop.xst" -ofn "C:/Users/Mohamed/FinalProject/DecompressionLoop.syr" 

@@ -1,0 +1,2 @@
+vhdl work "Decompressionloop.vhd"
+vhdl work "testdecompression.vhd"
