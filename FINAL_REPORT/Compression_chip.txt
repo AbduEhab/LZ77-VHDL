@@ -1,0 +1,204 @@
+----------------------------------------------------------------------------------
+-- Company:
+-- Engineer: 
+-- 
+-- Create Date:    23:26:58 01/10/2021 
+-- Design Name: 
+-- Module Name:    Compression_Chip - Behavioral 
+-- Project Name: 
+-- Target Devices: 
+-- Tool versions: 
+-- Description: 
+--
+-- Dependencies: 
+--
+-- Revision: 
+-- Revision 0.01 - File Created
+-- Additional Comments: 
+--
+----------------------------------------------------------------------------------
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
+-- Uncomment the following library declaration if using
+-- arithmetic functions with Signed or Unsigned values
+use IEEE.NUMERIC_STD.ALL;
+
+-- Uncomment the following library declaration if instantiating
+-- any Xilinx primitives in this code.
+--library UNISIM;
+--use UNISIM.VComponents.all;
+
+entity Compression_Chip is
+ port (  inputs:in std_logic_vector(511 downto 0);
+			outputf:out std_logic_vector(511 downto 0));
+ 
+        
+end Compression_Chip;
+
+architecture Behavioral of Compression_Chip is
+
+ --signal inputs :std_logic_vector(511 downto 0):= (others => '0');
+
+function to_bstring(sl : std_logic) return string is-- function to print an std logic vector for tracing
+  variable sl_str_v : string(1 to 3);  -- std_logic image with quotes around
+begin
+  sl_str_v := std_logic'image(sl);
+  return "" & sl_str_v(2);  -- "" & character to get string
+end function;
+
+function to_bstring(slv : std_logic_vector) return string is
+  alias    slv_norm : std_logic_vector(1 to slv'length) is slv;
+  variable sl_str_v : string(1 to 1);  -- String of std_logic
+  variable res_v    : string(1 to slv'length);
+begin
+  for idx in slv_norm'range loop
+    sl_str_v := to_bstring(slv_norm(idx));
+    res_v(idx) := sl_str_v(1);
+  end loop;
+  return res_v;
+end function;
+
+ 
+begin
+ process (inputs)
+ variable lmax_v:std_logic_vector(1 downto 0):= (others => '0');
+ variable jump :std_logic_vector(2 downto 0):= (others => '0');
+ variable nextchar: std_logic_vector(7 downto 0):= (others => '0');
+ variable output : std_logic_vector(511 downto 0):= (others => '0');
+ variable window: std_logic_vector(47 downto 0):= (others => '0');-- also called Dictionary
+ variable aheadbuffer: std_logic_vector(23 downto 0):= (others => '0');
+ variable LengthMax:std_logic_vector(1 downto 0):= (others => '0');
+ variable chNext:std_logic_vector(7 downto 0):= (others => '0');
+ variable currentchar:std_logic_vector(7 downto 0):=(others => '0');
+ Variable pointer :Integer:=0 ;
+ Variable kq: integer:=0;
+ variable k:integer:=0;
+ variable j:integer:=0;
+ variable I:integer:=0;
+ variable n : integer;
+ variable count: integer:=0;
+ variable calculate_any:integer:=0;
+ variable lmax :Integer:=0;-- buffer length we can skip 3 characters with 2 bits representing number 3--
+ variable input:std_logic_vector(511 downto 0):=(others => '0');
+-- each report statement included is to trace the values of the variables 
+-- to ensure that they work correctly.
+ begin
+ pointer :=64;
+ kq:=55;
+ k := 47;
+ j := 23;
+ I := pointer;
+ input := inputs;
+
+ while ( pointer >0)loop-- pointer that loops over the input byte by byte
+		
+	 window := (others => '0');
+	 aheadbuffer:= (others => '0');
+	 n := pointer + 6; -- value to loop over
+	 while (n > pointer) loop -- to fill the window
+			if (n <= 64) then
+--			report to_bstring(input(((n*8)-1) downto ((n*8) - 8)));
+				window := (window((47 - 8) downto 0) & ( input(((n*8)-1) downto ((n*8) - 8)))); -- dictionary.add("" + input.charAt(i));
+--				dictionary_Size := dictionary_Size + 1;
+			end if;
+		
+			n := n-1;
+	 end loop;
+		
+	 -- Second Loop to fill the look ahead buffer
+	 n := pointer;
+	 while (n > pointer -3 ) loop -- for(int i = pointer; i  < pointer + 5 && i < input.length(); i++)
+		  if(n>0) then
+		  
+			 aheadbuffer := aheadbuffer((23 - 8) downto 0) & input(((n*8)-1) downto ((n*8)-8)); -- lookAheadBuffer.add(""+input.charAt(i));
+			 
+		  else
+			 aheadbuffer := aheadbuffer((23 - 8) downto 0) & "00000000";
+--			lookAheadBuffer_Size := lookAheadBuffer_Size + 1;
+        end if;
+		n := n-1;
+		end loop;
+		if((aheadbuffer(23 downto 0))="000000000000000000000000")then exit ;end if;
+	--	report "  buffer is  " & to_bstring(aheadbuffer(23 downto 0));
+ 
+ 
+ kq:=55;
+ k := 47;
+ j := 23;
+-- 	report "j " & integer 'image(j);
+--   report "k " & integer 'image(k);
+-- nested loops to determine the longest match between the buffer and the window
+	while( j >0) loop-- iteration over the buffer
+		k:=kq-8;-- to save the position of the iterator of the window to start from the next position of the previous loop
+		while( k > 0 )loop-- iteration over the window AKA dictionary 
+		  kq:=k;
+		 -- report to_bstring(aheadbuffer);
+			if((aheadbuffer( j downto (j-7))) = (window(k downto (k-7))))then 
+			-- report "here first IF";
+				if(jump = "000")then 
+			--	report " k is " & integer 'image(k);
+					calculate_any:=((k+1)/8);-- determine the value of the jump in integer form
+				--	report "here 2nd IF";
+				--	report " the jump is  " & integer 'image(calculate_any);
+					jump := std_logic_vector(to_unsigned(calculate_any, 3));-- function that convert integer into an std logic vector
+				
+				end if;
+				lmax := lmax+1;-- increment the maximum sequence found length by 1 each matched byte 
+			exit;-- because we found a match thus we move to the next character in the buffer
+		   end if;
+			k := k-8; -- decrement the window iterator by 8 bits " byte = character " each iteration 
+		end loop;
+	--report"second loop";
+		if(jump="000") then 
+			--report "here 3rd IF";
+			exit;-- the first character in the buffer has no match in the window so we exit 
+			end if;
+		
+		
+		j:= j-8 ; -- decrement the buffer iterator by 8 bits " byte = character" each iteration 
+	end loop;
+	
+	LengthMax := std_logic_vector(to_unsigned(lmax, 2));-- from integer into std logic vector 
+	currentchar:=input((((pointer)*8)-1) downto (((pointer)*8)-8));-- we get the current character in case it was not found in the window
+	if((pointer-lmax)>0)then
+		chNext := input((((pointer-lmax)*8)-1) downto (((pointer-lmax)*8)-8));	-- next character to be saved in the compression of the sequence ( jump , max length ,nextcharacter )
+	end if;
+	if(not (jump ="000") )then
+--	report integer 'image(pointer);
+	
+			if((((pointer-lmax)*8)-8)>0)then -- concatinate the compressed form into the output
+				output:= output(498 downto 0)&(jump & LengthMax & chNext);
+				pointer := pointer-lmax-1; -- start from the position after the compression of the current sequence
+				count:=count+13;-- each time we compress it takes 13 bits thus we increment the count of bits by 13 each operation
+				--report " First if"&to_bstring(output);
+				
+			else
+				output:= output(498 downto 0) & (jump & LengthMax & "00000000");-- in case there is no next character concatinate 8 bits of zeros marking the end of the compression 
+				pointer := pointer-lmax-1;
+				count:=count+13;
+				--report " First Else"&to_bstring(output);
+			end if;
+	else
+			output:=output(498 downto 0)  & "00000" & currentchar ; -- when we encounter a character that is not found in the window the jump and lmax are set to "00000"
+			pointer:= pointer-1;
+			count:=count+13;
+
+	
+	end if;
+	
+	
+	jump :="000";
+	lmax:=0;
+	
+end loop;
+output := output( count-1 downto 0) & output( 511 downto count);-- reverse the direction of the compression to put the compressed bits in the left side " most significant bits" 
+--report "Count" & integer'image(count);
+--report to_bstring(output);
+outputf <= output;	
+
+end process;
+
+end Behavioral;
+
+
