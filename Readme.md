@@ -21,7 +21,7 @@
 
 ## Results
 
-A [Final Report](https://github.com/AbduEhab/LZ77-VHDL/blob/main/FINAL_REPORT/DSD%20ProJect%20Report.pdf) can be found, along with many charts) in the [Final Report folder](https://github.com/AbduEhab/LZ77-VHDL/tree/main/FINAL_REPORT).
+A [Final Report](https://github.com/AbduEhab/LZ77-VHDL/blob/main/FINAL_REPORT/DSD%20ProJect%20Report.pdf) can be found, along with many charts, in the [Final Report folder](https://github.com/AbduEhab/LZ77-VHDL/tree/main/FINAL_REPORT).
 
 ## Compression
 
